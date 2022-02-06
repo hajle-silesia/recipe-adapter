@@ -1,4 +1,6 @@
 FROM python:3.9-slim
-RUN mkdir app
-COPY ./app/src ./app
-CMD ["python", "./app/main.py"]
+WORKDIR app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY ./app/src .
+CMD ["python", "app.py"]
