@@ -1,14 +1,13 @@
-from flask import Flask
-import json
+from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
 
 
-app = Flask(__name__)
-
-
-@app.route("/")
-def hello_world():
-    return json.dumps({"message": "hello Docker!"})
+@app.get("/")
+async def hello_world():
+    return {"message": "hello Docker!"}
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    uvicorn.run(app, host="0.0.0.0", port=5000)
