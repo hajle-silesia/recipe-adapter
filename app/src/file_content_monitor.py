@@ -6,14 +6,14 @@ import os
 
 class FileContentMonitor(threading.Thread):
     def __init__(self, path):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, daemon=True)
 
         self.__monitoring_interval_time = 5
         self.__path = path
 
         self.__last_modification_time = 0
         self.__checksum = None
-        self.__content = None
+        self.__content = ""
 
         self.start()
 
