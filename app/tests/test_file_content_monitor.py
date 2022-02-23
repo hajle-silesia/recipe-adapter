@@ -60,6 +60,7 @@ class TestFileContentMonitor(unittest.TestCase):
     def test_Should_GetNoContent_When_FileWasRemoved(self):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
         self.remove_file()
+        wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
 
@@ -72,7 +73,6 @@ class TestFileContentMonitor(unittest.TestCase):
     def test_Should_GetUpdatedContent_When_FileContentWasAdded(self):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
         self.append_content_to_file_and_wait_monitoring_interval_time_with_buffer()
-        wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual(2 * self.content, self.file_content_monitor.content)
 
