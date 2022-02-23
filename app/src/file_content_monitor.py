@@ -29,6 +29,8 @@ class FileContentMonitor(threading.Thread):
         if os.path.exists(self.__path):
             self.__check_file()
             self.__wait_time_interval()
+        else:
+            self.__clear_content()
 
     def __check_file(self):
         self.__get_last_modification_time()
@@ -72,3 +74,7 @@ class FileContentMonitor(threading.Thread):
 
     def __wait_time_interval(self):
         sleep(self.__monitoring_interval_time)
+
+    def __clear_content(self):
+        if self.__content != "":
+            self.__content = ""
