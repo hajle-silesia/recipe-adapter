@@ -14,11 +14,18 @@ spec:
       labels:
         app: recipe-adapter
     spec:
+      volumes:
+      - name: file-content-monitor-storage
+        persistentVolumeClaim:
+          claimName: file-content-monitor-pvc
       containers:
       - name: recipe-adapter
         image: mtweeman/hajle-silesia_recipe-adapter:latest
         ports:
         - containerPort: 5000
+        volumeMounts:
+          - mountPath: "/app/src"
+            name: file-content-monitor-storage
 ---
 apiVersion: v1
 kind: Service
