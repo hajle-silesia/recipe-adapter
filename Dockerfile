@@ -4,4 +4,4 @@ RUN mkdir src
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 COPY ./app/src ./src
-CMD ["python", "src/app.py"]
+CMD ["python", "src/main.py"]
