@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: recipe-adapter
+  name: file-content-monitor
   labels:
-    app: recipe-adapter
+    app: file-content-monitor
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: recipe-adapter
+      app: file-content-monitor
   template:
     metadata:
       labels:
-        app: recipe-adapter
+        app: file-content-monitor
     spec:
       volumes:
       - name: file-content-monitor-storage
         persistentVolumeClaim:
           claimName: file-content-monitor-pvc
       containers:
-      - name: recipe-adapter
-        image: mtweeman/hajle-silesia_recipe-adapter:latest
+      - name: file-content-monitor
+        image: mtweeman/hajle-silesia_file-content-monitor:latest
         ports:
         - containerPort: 5000
         volumeMounts:
@@ -30,10 +30,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: recipe-adapter
+  name: file-content-monitor
 spec:
   selector:
-    app: recipe-adapter
+    app: file-content-monitor
   ports:
     - protocol: TCP
       port: 5000
