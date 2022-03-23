@@ -27,21 +27,23 @@ class FileContentMonitor(threading.Thread):
 
     def __monitor_file(self):
         if os.path.exists(self.__path):
-            self.__check_file()
-            self.__wait_time_interval()
+            if self.__file_changed():
+                self.__update_data()
         else:
             self.__clear_content()
 
-    def __check_file(self):
+        self.__wait_time_interval()
+
+    def __file_changed(self):
         self.__get_last_modification_time()
 
         if self.__modification_time_changed():
             self.__calculate_file_checksum()
 
             if self.__checksum_changed():
-                self.__update_last_modification_time()
-                self.__update_checksum()
-                self.__update_content()
+                return True
+
+        return False
 
     def __get_last_modification_time(self):
         self.__new_last_modification_time = os.path.getmtime(self.__path)
@@ -55,13 +57,18 @@ class FileContentMonitor(threading.Thread):
 
     def __read_file(self):
         with open(self.__path, encoding="utf-8") as file:
-            self.__new_file_content = file.read()
+            self.__new_content = file.read()
 
     def __get_checksum(self):
-        self.__new_checksum = hashlib.sha256(self.__new_file_content.encode()).hexdigest()
+        self.__new_checksum = hashlib.sha256(self.__new_content.encode()).hexdigest()
 
     def __checksum_changed(self):
         return True if self.__new_checksum != self.__checksum else False
+
+    def __update_data(self):
+        self.__update_last_modification_time()
+        self.__update_checksum()
+        self.__update_content()
 
     def __update_last_modification_time(self):
         self.__last_modification_time = self.__new_last_modification_time
@@ -70,11 +77,11 @@ class FileContentMonitor(threading.Thread):
         self.__checksum = self.__new_checksum
 
     def __update_content(self):
-        self.__content = self.__new_file_content
-
-    def __wait_time_interval(self):
-        sleep(self.__monitoring_interval_time)
+        self.__content = self.__new_content
 
     def __clear_content(self):
         if self.__content != "":
             self.__content = ""
+
+    def __wait_time_interval(self):
+        sleep(self.__monitoring_interval_time)

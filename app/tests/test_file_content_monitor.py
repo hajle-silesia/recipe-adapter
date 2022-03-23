@@ -24,18 +24,18 @@ class TestFileContentMonitor(unittest.TestCase):
     def set_test_expected_results(self):
         pass
 
-    def test_Should_GetNoContent_When_FileIsNotAvailable(self):
+    def test_Should_GetEmptyContent_When_FileIsNotAvailable(self):
         wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
 
-    def test_Should_GetNoContent_When_NotAvailableFileIsCreated(self):
+    def test_Should_GetEmptyContent_When_NotAvailableFileIsCreated(self):
         wait_monitoring_interval_time_with_buffer()
         self.write_nothing_to_file_and_wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
 
-    def test_Should_GetNoContent_When_FileIsEmpty(self):
+    def test_Should_GetEmptyContent_When_FileIsEmpty(self):
         self.write_nothing_to_file_and_wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
@@ -51,13 +51,13 @@ class TestFileContentMonitor(unittest.TestCase):
 
         self.assertEqual(self.content, self.file_content_monitor.content)
 
-    def test_Should_GetNoContent_When_FileContentWasRemoved(self):
+    def test_Should_GetEmptyContent_When_FileContentWasRemoved(self):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
         self.write_nothing_to_file_and_wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
 
-    def test_Should_GetNoContent_When_FileWasRemoved(self):
+    def test_Should_GetEmptyContent_When_FileWasRemoved(self):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
         self.remove_file()
         wait_monitoring_interval_time_with_buffer()
@@ -102,4 +102,10 @@ class TestFileContentMonitor(unittest.TestCase):
 
 
 def wait_monitoring_interval_time_with_buffer():
-    sleep(6)
+    monitoring_interval_time = 5
+    buffer = 1
+    sleep(monitoring_interval_time + buffer)
+
+
+if __name__ == "__main__":
+    unittest.main()
