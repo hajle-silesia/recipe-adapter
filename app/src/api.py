@@ -4,7 +4,7 @@ from file_content_monitor import FileContentMonitor
 
 
 api = FastAPI()
-file_content_monitor = FileContentMonitor("./file_content_monitor/recipe.txt")
+file_content_monitor = FileContentMonitor("./file_content_monitor/recipe.xml")
 
 
 @api.get("/content")
