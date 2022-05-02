@@ -32,7 +32,6 @@ kind: Service
 metadata:
   name: file-content-monitor
 spec:
-  type: NodePort
   selector:
     app: file-content-monitor
   ports:
