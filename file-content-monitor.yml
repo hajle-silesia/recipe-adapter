@@ -39,3 +39,20 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: file-content-monitor
+spec:
+  rules:
+    - host: file-content-monitor.test
+      http:
+        paths:
+          - path: /content
+            pathType: Prefix
+            backend:
+              service:
+                name: file-content-monitor
+                port:
+                  number: 80
