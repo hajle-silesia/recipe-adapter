@@ -24,7 +24,7 @@ spec:
         ports:
         - containerPort: 5000
         volumeMounts:
-          - mountPath: "/app/file_content_monitor"
+          - mountPath: "project/file_content_monitor"
             name: file-content-monitor-storage
 ---
 apiVersion: v1

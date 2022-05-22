@@ -1,12 +1,12 @@
 import base64
+from pathlib import Path
 
 from fastapi import FastAPI
 
 from src.file_content_monitor import FileContentMonitor
 
-
 api = FastAPI()
-file_content_monitor = FileContentMonitor("./file_content_monitor/recipe.xml")
+file_content_monitor = FileContentMonitor(Path(__file__).parent / "../file_content_monitor/recipe.xml")
 
 
 @api.get("/content")

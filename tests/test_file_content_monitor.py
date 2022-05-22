@@ -1,6 +1,7 @@
 import unittest
 from time import sleep
 import os
+from pathlib import Path
 
 from src.file_content_monitor import FileContentMonitor
 
@@ -15,7 +16,7 @@ class TestFileContentMonitor(unittest.TestCase):
         self.remove_file()
 
     def set_test_arguments(self):
-        self.path = "./test.txt"
+        self.path = Path(__file__).parent / "./test.txt"
         self.content = ".123inside\nfile"
 
     def set_tested_objects(self):
