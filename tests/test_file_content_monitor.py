@@ -2,7 +2,7 @@ import unittest
 from time import sleep
 import os
 
-from app.src.file_content_monitor import FileContentMonitor
+from src.file_content_monitor import FileContentMonitor
 
 
 class TestFileContentMonitor(unittest.TestCase):
