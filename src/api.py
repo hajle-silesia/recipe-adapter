@@ -2,7 +2,7 @@ import base64
 
 from fastapi import FastAPI
 
-from file_content_monitor import FileContentMonitor
+from src.file_content_monitor import FileContentMonitor
 
 
 api = FastAPI()
