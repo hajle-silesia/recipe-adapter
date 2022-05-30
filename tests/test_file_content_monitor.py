@@ -7,22 +7,28 @@ from src.file_content_monitor import FileContentMonitor
 
 
 class TestFileContentMonitor(unittest.TestCase):
-    def setUp(self):
-        self.set_test_arguments()
-        self.set_tested_objects()
-        self.set_test_expected_results()
+    path = None
+
+    @classmethod
+    def setUpClass(cls):
+        cls.set_test_arguments()
+        cls.set_tested_objects()
+        cls.set_test_expected_results()
 
     def tearDown(self):
         self.remove_file()
 
-    def set_test_arguments(self):
-        self.path = Path(__file__).parent / "./test.txt"
-        self.content = ".123inside\nfile"
+    @classmethod
+    def set_test_arguments(cls):
+        cls.path = Path(__file__).parent / "./test.txt"
+        cls.content = ".123inside\nfile"
 
-    def set_tested_objects(self):
-        self.file_content_monitor = FileContentMonitor(self.path)
+    @classmethod
+    def set_tested_objects(cls):
+        cls.file_content_monitor = FileContentMonitor(cls.path)
 
-    def set_test_expected_results(self):
+    @classmethod
+    def set_test_expected_results(cls):
         pass
 
     def test_Should_GetEmptyContent_When_FileIsNotAvailable(self):
