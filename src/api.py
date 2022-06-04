@@ -6,7 +6,12 @@ from fastapi import FastAPI
 from src.file_content_monitor import FileContentMonitor
 
 api = FastAPI()
-file_content_monitor = FileContentMonitor(Path(__file__).parent / "../file_content_monitor/recipe.xml")
+
+
+@api.get("/api")
+async def content():
+    return {"/content",
+            }
 
 
 @api.get("/content")
