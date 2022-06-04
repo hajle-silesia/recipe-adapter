@@ -1,15 +1,18 @@
-import threading
 import hashlib
-from time import sleep
 import os
+import threading
+from time import sleep
+
+import requests
 
 
 class FileContentMonitor(threading.Thread):
-    def __init__(self, path):
+    def __init__(self, path, url):
         threading.Thread.__init__(self, daemon=True)
 
         self.__monitoring_interval_time = 5
         self.__path = path
+        self.__url = url
 
         self.__last_modification_time = 0
         self.__checksum = None
@@ -21,14 +24,21 @@ class FileContentMonitor(threading.Thread):
     def content(self):
         return self.__content
 
+    @property
+    def response(self):
+        return self.__response
+
     def run(self):
         while True:
             self.__monitor_file()
 
     def __monitor_file(self):
+        self.__response = None
+
         if os.path.exists(self.__path):
             if self.__file_changed():
                 self.__update_data()
+                self.__notify()
         else:
             self.__clear_content()
 
@@ -78,6 +88,10 @@ class FileContentMonitor(threading.Thread):
 
     def __update_content(self):
         self.__content = self.__new_content
+
+    def __notify(self):
+        if self.__content:
+            self.__response = requests.post(self.__url, self.__content)
 
     def __clear_content(self):
         if self.__content != "":
