@@ -7,6 +7,8 @@ import requests
 
 
 class FileContentMonitor(threading.Thread):
+    _content_default = ""
+
     def __init__(self, path, url):
         threading.Thread.__init__(self, daemon=True)
 
@@ -16,7 +18,7 @@ class FileContentMonitor(threading.Thread):
 
         self.__last_modification_time = 0
         self.__checksum = None
-        self.__content = ""
+        self.__content = self._content_default
 
         self.start()
 
@@ -94,8 +96,8 @@ class FileContentMonitor(threading.Thread):
             self.__response = requests.post(self.__url, self.__content)
 
     def __clear_content(self):
-        if self.__content != "":
-            self.__content = ""
+        if self.__content != self._content_default:
+            self.__content = self._content_default
 
     def __wait_time_interval(self):
         sleep(self.__monitoring_interval_time)
