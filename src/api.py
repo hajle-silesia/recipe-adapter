@@ -22,5 +22,5 @@ async def content():
 
 @api.get("/content")
 async def content():
-    return {"content": base64.b64encode(file_content_monitor.content.encode()),
+    return {"content": file_content_monitor.content,
             }
