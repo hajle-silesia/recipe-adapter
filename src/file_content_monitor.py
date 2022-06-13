@@ -20,6 +20,7 @@ class FileContentMonitor(threading.Thread):
         self.__last_modification_time = 0
         self.__checksum = None
         self.__content = self._content_default
+        self.__response = None
 
         self.start()
 
