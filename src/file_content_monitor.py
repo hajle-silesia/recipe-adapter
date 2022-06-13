@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import os
 import threading
@@ -93,7 +94,7 @@ class FileContentMonitor(threading.Thread):
 
     def __notify(self):
         if self.__content:
-            self.__response = requests.post(self.__url, self.__content)
+            self.__response = requests.post(self.__url, base64.b64encode(self.__content.encode()))
 
     def __clear_content(self):
         if self.__content != self._content_default:
