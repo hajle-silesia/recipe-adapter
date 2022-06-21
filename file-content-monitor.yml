@@ -1,3 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: file-content-monitor-pv
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadOnlyMany
+  hostPath:
+    path: "/data/recipe"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: file-content-monitor-pvc
+spec:
+  accessModes:
+    - ReadOnlyMany
+  resources:
+    requests:
+      storage: 1Mi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
