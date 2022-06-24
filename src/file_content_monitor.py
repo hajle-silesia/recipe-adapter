@@ -13,10 +13,10 @@ class FileContentMonitor(threading.Thread):
     def __init__(self, path, url):
         threading.Thread.__init__(self, daemon=True)
 
-        self.__monitoring_interval_time = 5
         self.__path = path
         self.__url = url
 
+        self.__monitoring_interval_time = 5
         self.__last_modification_time = 0
         self.__checksum = None
         self.__content = self._content_default
@@ -94,11 +94,11 @@ class FileContentMonitor(threading.Thread):
         self.__content = self.__new_content
 
     def __notify(self):
-        if self.__content:
-            self.__response = requests.post(self.__url, base64.b64encode(self.__content.encode()))
+        if self.content:
+            self.__response = requests.post(self.__url, base64.b64encode(self.content.encode()))
 
     def __clear_content(self):
-        if self.__content != self._content_default:
+        if self.content != self._content_default:
             self.__content = self._content_default
 
     def __wait_time_interval(self):
