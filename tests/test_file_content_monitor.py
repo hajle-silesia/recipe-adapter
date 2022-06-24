@@ -26,8 +26,6 @@ def mocked_requests_post(*args, **kwargs):
 
 @mock.patch("src.file_content_monitor.requests.post", side_effect=mocked_requests_post)
 class TestFileContentMonitor(unittest.TestCase):
-    path = None
-
     @classmethod
     def setUpClass(cls):
         cls.set_test_arguments()
@@ -55,7 +53,7 @@ class TestFileContentMonitor(unittest.TestCase):
     def tearDown(self):
         super().tearDown()
 
-        self.remove_file()
+        remove_file(self.path)
 
     def test_Should_GetEmptyContent_When_FileIsNotAvailable(self, mock_get):
         wait_monitoring_interval_time_with_buffer()
@@ -100,7 +98,7 @@ class TestFileContentMonitor(unittest.TestCase):
 
     def test_Should_GetEmptyContent_When_FileWasRemoved(self, mock_get):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
-        self.remove_file()
+        remove_file(self.path)
         wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
@@ -141,9 +139,10 @@ class TestFileContentMonitor(unittest.TestCase):
             file.write(self.content)
         wait_monitoring_interval_time_with_buffer()
 
-    def remove_file(self):
-        if os.path.exists(self.path):
-            os.remove(self.path)
+
+def remove_file(path):
+    if os.path.exists(path):
+        os.remove(path)
 
 
 def wait_monitoring_interval_time_with_buffer():
