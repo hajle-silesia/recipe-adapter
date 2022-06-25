@@ -33,7 +33,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Lint with bandit
       run: bandit -r .
-    - name: Unit tests with pyttest
+    - name: Unit tests with pytest
       run: coverage run --source=src/ -m pytest
     - name: Code test coverage with coverage
       run: coverage report -m
