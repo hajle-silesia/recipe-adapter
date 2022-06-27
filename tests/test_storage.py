@@ -45,13 +45,13 @@ class TestStorage(unittest.TestCase):
         self.assertEqual(self.path, self.storage.path)
 
     def test_Should_NotCreateDataFile_When_OnlyPathWasNotSet(self):
-        self.storage.store_data(self.data)
+        self.storage.dump_data(self.data)
 
         self.assertEqual(False, os.path.exists(self.path))
 
     def test_Should_NotCreateDataFile_When_OnlyDataWasNotSet(self):
         self.storage.path = self.path
-        self.storage.store_data(None)
+        self.storage.dump_data(None)
 
         self.assertEqual(False, os.path.exists(self.path))
 
@@ -60,18 +60,28 @@ class TestStorage(unittest.TestCase):
 
     def test_Should_CreateDataFile_When_PathAndDataWereSet(self):
         self.storage.path = self.path
-        self.storage.store_data(self.data)
+        self.storage.dump_data(self.data)
 
         self.assertEqual(True, os.path.exists(self.path))
 
-    def test_Should_StoreData_When_PathAndDataWereSet(self):
+    def test_Should_DumpData_When_PathAndDataWereSet(self):
         self.storage.path = self.path
-        self.storage.store_data(self.data)
+        self.storage.dump_data(self.data)
 
-        with open(self.path, encoding="utf-8") as data_file:
-            data = json.load(data_file)
+        with open(self.path, encoding="utf-8") as data_json:
+            data = json.load(data_json)
 
         self.assertEqual(self.data, data)
+
+    def test_Should_LoadData_When_Invoked(self):
+        data = "test_data"
+
+        with open(self.path, "w", encoding="utf-8") as data_json:
+            json.dump(data, data_json)
+
+        self.storage.path = self.path
+
+        self.assertEqual(data, self.storage.load_data())
 
 
 def remove_file(path):
