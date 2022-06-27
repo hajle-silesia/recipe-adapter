@@ -3,6 +3,7 @@ import os
 import unittest
 from pathlib import Path
 
+from miscs import remove_file
 from src.storage import Storage
 
 
@@ -82,8 +83,3 @@ class TestStorage(unittest.TestCase):
         self.storage.path = self.path
 
         self.assertEqual(data, self.storage.load_data())
-
-
-def remove_file(path):
-    if os.path.exists(path):
-        os.remove(path)
