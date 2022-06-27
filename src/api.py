@@ -1,22 +1,30 @@
 import base64
 from pathlib import Path
-import os
-from fastapi import FastAPI
+
+from fastapi import FastAPI, Request
 
 from src.file_content_monitor import FileContentMonitor
+from src.notifier import Notifier
+from src.storage import Storage
 
-path = Path(__file__).parent / "../file_content_monitor/recipe.xml"
-host = os.getenv('FILE_CONTENT_CONVERTER_SERVICE_HOST')
-port = os.getenv('FILE_CONTENT_CONVERTER_SERVICE_PORT')
-url = f"http://{host}:{port}/update"
+config_path = Path(__file__).parent / "../file_content_monitor/config.json"
+recipe_path = Path(__file__).parent / "../recipe/recipe.xml"
 
 api = FastAPI()
-file_content_monitor = FileContentMonitor(path, url)
+
+storage = Storage()
+storage.path = config_path
+notifier = Notifier(storage)
+file_content_monitor = FileContentMonitor(notifier)
+file_content_monitor.path = recipe_path
 
 
 @api.get("/api")
 async def content():
     return {"/content",
+            "/observers",
+            "/observers/register",
+            "/observers/remove",
             }
 
 
@@ -24,3 +32,20 @@ async def content():
 async def content():
     return {"content": file_content_monitor.content,
             }
+
+
+@api.get("/observers")
+async def observers_get():
+    return notifier.observers
+
+
+@api.post("/observers/register")
+async def observers_register(request: Request):
+    request_body = base64.b64decode(await request.body()).decode()
+    notifier.register_observer(request_body)
+
+
+@api.post("/observers/remove")
+async def observers_remove(request: Request):
+    request_body = base64.b64decode(await request.body()).decode()
+    notifier.remove_observer(request_body)
