@@ -35,7 +35,7 @@ async def content():
 
 
 @api.get("/observers")
-async def observers_get():
+async def observers():
     return notifier.observers
 
 
