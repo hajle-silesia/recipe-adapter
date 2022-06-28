@@ -20,7 +20,7 @@ file_content_monitor.path = recipe_path
 
 
 @api.get("/api")
-async def content():
+async def api():
     return {"/content",
             "/observers",
             "/observers/register",
