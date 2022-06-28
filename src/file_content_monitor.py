@@ -1,44 +1,42 @@
-import base64
 import hashlib
 import os
 import threading
 from time import sleep
 
-import requests
-
 
 class FileContentMonitor(threading.Thread):
     _content_default = ""
 
-    def __init__(self, path, url):
+    def __init__(self, notifier):
         threading.Thread.__init__(self, daemon=True)
 
-        self.__path = path
-        self.__url = url
+        self.__notifier = notifier
 
+        self.__path = ""
         self.__monitoring_interval_time = 5
         self.__last_modification_time = 0
         self.__checksum = None
         self.__content = self._content_default
-        self.__response = None
 
         self.start()
 
     @property
-    def content(self):
-        return self.__content
+    def path(self):
+        return self.__path
+
+    @path.setter
+    def path(self, path):
+        self.__path = path
 
     @property
-    def response(self):
-        return self.__response
+    def content(self):
+        return self.__content
 
     def run(self):
         while True:
             self.__monitor_file()
 
     def __monitor_file(self):
-        self.__response = None
-
         if os.path.exists(self.__path):
             if self.__file_changed():
                 self.__update_data()
@@ -95,7 +93,7 @@ class FileContentMonitor(threading.Thread):
 
     def __notify(self):
         if self.content:
-            self.__response = requests.post(self.__url, base64.b64encode(self.content.encode()))
+            self.__notifier.notify_observers(self.content)
 
     def __clear_content(self):
         if self.content != self._content_default:
