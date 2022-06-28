@@ -30,7 +30,7 @@ def mocked_requests_post(*args, **kwargs):
 
 @mock.patch("src.notifier.requests.post", side_effect=mocked_requests_post)
 class TestNotifier(unittest.TestCase):
-    path = ""
+    storage_path = None
     storage = None
 
     @classmethod
@@ -41,9 +41,9 @@ class TestNotifier(unittest.TestCase):
 
     @classmethod
     def set_test_arguments(cls):
-        cls.path = Path(__file__).parent / "./data.json"
+        cls.storage_path = Path(__file__).parent / "./data.json"
         cls.storage = Storage()
-        cls.storage.path = cls.path
+        cls.storage.path = cls.storage_path
 
     @classmethod
     def set_tested_objects(cls):
@@ -61,13 +61,13 @@ class TestNotifier(unittest.TestCase):
     def tearDown(self):
         super().tearDown()
 
-        remove_file(self.path)
+        remove_file(self.storage_path)
 
     def test_Should_GetEmptyObservers_When_ObserversWereNotAdded(self, mock_get):
         self.assertEqual({}, self.notifier.observers)
 
     def test_Should_NotGetObserversFile_When_ObserversWereNotAdded(self, mock_get):
-        self.assertEqual(False, os.path.exists(self.path))
+        self.assertEqual(False, os.path.exists(self.storage_path))
 
     def test_Should_GetObservers_When_ObserverWasAdded(self, mock_get):
         self.notifier.register_observer(url_1)
@@ -77,12 +77,12 @@ class TestNotifier(unittest.TestCase):
     def test_Should_GetObserversFile_When_ObserverWasAdded(self, mock_get):
         self.notifier.register_observer(url_1)
 
-        self.assertEqual(True, os.path.exists(self.path))
+        self.assertEqual(True, os.path.exists(self.storage_path))
 
     def test_Should_DumpObservers_When_ObserverWasAdded(self, mock_get):
         self.notifier.register_observer(url_1)
 
-        with open(self.path, encoding="utf-8") as data_json:
+        with open(self.storage_path, encoding="utf-8") as data_json:
             data = json.load(data_json)
 
         self.assertEqual(url_1, data)
@@ -97,13 +97,13 @@ class TestNotifier(unittest.TestCase):
         self.notifier.register_observer(url_1)
         self.notifier.register_observer(url_1)
 
-        self.assertEqual(True, os.path.exists(self.path))
+        self.assertEqual(True, os.path.exists(self.storage_path))
 
     def test_Should_DumpObservers_When_TheSameObserverWasAdded(self, mock_get):
         self.notifier.register_observer(url_1)
         self.notifier.register_observer(url_1)
 
-        with open(self.path, encoding="utf-8") as data_json:
+        with open(self.storage_path, encoding="utf-8") as data_json:
             data = json.load(data_json)
 
         self.assertEqual(url_1, data)
@@ -118,13 +118,13 @@ class TestNotifier(unittest.TestCase):
         self.notifier.register_observer(url_1)
         self.notifier.register_observer(url_2)
 
-        self.assertEqual(True, os.path.exists(self.path))
+        self.assertEqual(True, os.path.exists(self.storage_path))
 
     def test_Should_DumpObservers_When_TwoObserversWereAdded(self, mock_get):
         self.notifier.register_observer(url_1)
         self.notifier.register_observer(url_2)
 
-        with open(self.path, encoding="utf-8") as data_json:
+        with open(self.storage_path, encoding="utf-8") as data_json:
             data = json.load(data_json)
 
         self.assertEqual(url_1 | url_2, data)
@@ -139,13 +139,13 @@ class TestNotifier(unittest.TestCase):
         self.notifier.register_observer(url_1)
         self.notifier.remove_observer(url_1)
 
-        self.assertEqual(True, os.path.exists(self.path))
+        self.assertEqual(True, os.path.exists(self.storage_path))
 
     def test_Should_DumpObservers_When_ObserverWasAddedAndRemoved(self, mock_get):
         self.notifier.register_observer(url_1)
         self.notifier.remove_observer(url_1)
 
-        with open(self.path, encoding="utf-8") as data_json:
+        with open(self.storage_path, encoding="utf-8") as data_json:
             data = json.load(data_json)
 
         self.assertEqual({}, data)
@@ -172,11 +172,11 @@ class TestNotifier(unittest.TestCase):
             self.assertEqual(None, response.json())
 
     def test_Should_LoadObservers_When_CreatingClassInstance(self, mock_get):
-        with open(self.path, "w", encoding="utf-8") as data_json:
+        with open(self.storage_path, "w", encoding="utf-8") as data_json:
             json.dump(url_1, data_json)
 
         storage = Storage()
-        storage.path = self.path
+        storage.path = self.storage_path
         notifier = Notifier(storage)
 
         self.assertEqual(url_1, notifier.observers)
