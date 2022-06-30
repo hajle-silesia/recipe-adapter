@@ -1,4 +1,5 @@
 import base64
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -41,11 +42,13 @@ async def observers():
 
 @app.post("/observers/register")
 async def observers_register(request: Request):
-    request_body = base64.b64decode(await request.body()).decode()
+    request_body_json = base64.b64decode(await request.body()).decode()
+    request_body = json.loads(request_body_json)
     notifier.register_observer(request_body)
 
 
 @app.post("/observers/remove")
 async def observers_remove(request: Request):
-    request_body = base64.b64decode(await request.body()).decode()
+    request_body_json = base64.b64decode(await request.body()).decode()
+    request_body = json.loads(request_body_json)
     notifier.remove_observer(request_body)
