@@ -35,4 +35,4 @@ class Notifier:
         self.responses.clear()
 
         for url in self.observers.values():
-            self.responses.append(requests.post(url, base64.b64encode(json.dumps(data).encode())))
+            self.responses.append(requests.post(url, base64.b64encode(json.dumps(data, default=str).encode())))
