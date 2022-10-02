@@ -20,6 +20,11 @@ file_content_monitor = FileContentMonitor(notifier)
 file_content_monitor.path = recipe_path
 
 
+@app.get("/healthz")
+async def healthz():
+    return {'status': "ok"}
+
+
 @app.get("/api")
 async def api():
     return {"/content",
