@@ -1,12 +1,12 @@
-import unittest
-from pathlib import Path
-from time import sleep
-from unittest import mock
+import pathlib
+import time
+import unittest.mock
 
-from miscs import remove_file
+import common.utils
+import common.notifier
+import common.storage
+
 from src.file_content_monitor import FileContentMonitor
-from src.notifier import Notifier
-from src.storage import Storage
 
 url = {'observer': "http://observer/update"}
 
@@ -26,7 +26,7 @@ def mocked_requests_post(*args, **kwargs):
         return MockResponse(None, 404)
 
 
-@mock.patch("src.notifier.requests.post", side_effect=mocked_requests_post)
+@unittest.mock.patch("common.notifier.requests.post", side_effect=mocked_requests_post)
 class TestFileContentMonitor(unittest.TestCase):
     storage = None
     storage_path = None
@@ -40,12 +40,12 @@ class TestFileContentMonitor(unittest.TestCase):
 
     @classmethod
     def set_test_arguments(cls):
-        cls.storage = Storage()
-        cls.storage_path = Path(__file__).parent / "./data.json"
+        cls.storage = common.storage.Storage()
+        cls.storage_path = pathlib.Path(__file__).parent / "./data.json"
         cls.storage.path = cls.storage_path
-        cls.notifier = Notifier(cls.storage)
+        cls.notifier = common.notifier.Notifier(cls.storage)
         cls.notifier.register_observer(url)
-        cls.file_path = Path(__file__).parent / "./test.txt"
+        cls.file_path = pathlib.Path(__file__).parent / "./test.txt"
         cls.content = ".123inside\nfile"
 
     @classmethod
@@ -65,13 +65,13 @@ class TestFileContentMonitor(unittest.TestCase):
     def tearDown(self):
         super().tearDown()
 
-        remove_file(self.file_path)
+        common.utils.remove_file(self.file_path)
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
 
-        remove_file(cls.storage_path)
+        common.utils.remove_file(cls.storage_path)
 
     def test_Should_GetEmptyPath_When_PathWasNotSet(self, mock_get):
         self.file_content_monitor = FileContentMonitor(self.notifier)
@@ -120,7 +120,7 @@ class TestFileContentMonitor(unittest.TestCase):
 
     def test_Should_GetEmptyContent_When_FileWasRemoved(self, mock_get):
         self.write_content_to_file_and_wait_monitoring_interval_time_with_buffer()
-        remove_file(self.file_path)
+        common.utils.remove_file(self.file_path)
         wait_monitoring_interval_time_with_buffer()
 
         self.assertEqual("", self.file_content_monitor.content)
@@ -163,4 +163,4 @@ class TestFileContentMonitor(unittest.TestCase):
 def wait_monitoring_interval_time_with_buffer():
     monitoring_interval_time = 5
     buffer = 1
-    sleep(monitoring_interval_time + buffer)
+    time.sleep(monitoring_interval_time + buffer)

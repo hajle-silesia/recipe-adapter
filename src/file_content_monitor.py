@@ -1,7 +1,7 @@
 import hashlib
 import os
 import threading
-from time import sleep
+import time
 
 
 class FileContentMonitor(threading.Thread):
@@ -100,4 +100,4 @@ class FileContentMonitor(threading.Thread):
             self.__content = self._content_default
 
     def __wait_time_interval(self):
-        sleep(self.__monitoring_interval_time)
+        time.sleep(self.__monitoring_interval_time)

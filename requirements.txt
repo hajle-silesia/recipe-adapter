@@ -1,3 +1,4 @@
 fastapi
 uvicorn
 requests
+git+https://github.com/hajle-silesia/common.git
