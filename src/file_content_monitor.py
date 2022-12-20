@@ -7,10 +7,10 @@ import time
 class FileContentMonitor(threading.Thread):
     _content_default = ""
 
-    def __init__(self, notifier):
+    def __init__(self, producer):
         threading.Thread.__init__(self, daemon=True)
 
-        self.__notifier = notifier
+        self.__producer = producer
 
         self.__path = ""
         self.__monitoring_interval_time = 5
@@ -93,7 +93,9 @@ class FileContentMonitor(threading.Thread):
 
     def __notify(self):
         if self.content:
-            self.__notifier.notify_observers(self.content)
+            self.__producer.send(topic="file-content-monitor-topic",
+                                 value=self.content,
+                                 )
 
     def __clear_content(self):
         if self.content != self._content_default:
