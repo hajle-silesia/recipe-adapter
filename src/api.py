@@ -28,3 +28,11 @@ async def healthz():
 async def content():
     return {"content": file_content_monitor.content,
             }
+
+
+@app.post("/update")
+async def update(request: fastapi.Request):
+    request_body_json = base64.b64decode(await request.body()).decode()
+    request_body = json.loads(request_body_json)
+    file_content_monitor.update(request_body)
+    return {"status": "ok"}

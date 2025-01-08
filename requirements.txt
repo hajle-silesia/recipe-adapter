@@ -1,5 +1,4 @@
 fastapi
 uvicorn
 requests
-https://github.com/hajle-silesia/common/zipball/master
 kafka-python
