@@ -2,8 +2,11 @@ name: CI
 
 on:
   push:
+    tags:
+      - "v*.*.*"
+  pull_request:
     branches:
-      [ master ]
+      - master
   workflow_dispatch:
 
 permissions:
@@ -38,47 +41,24 @@ jobs:
       - name: Code test coverage with coverage
         run: coverage report -m
 
-  build:
-    needs: test
-    runs-on: ubuntu-latest
+  image-build:
+    needs:
+      - test
+    name: Image build
+    uses: hajle-silesia/.github/.github/workflows/shared-image-build.yaml@v2.4.1
+    with:
+      docker-hub-username: ${{ vars.DOCKER_HUB_USERNAME }}
+      docker-hub-namespace: ${{ vars.DOCKER_HUB_NAMESPACE }}
+    secrets:
+      docker-hub-token: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          path: app
-
-      - name: Login to Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: Set Docker image name and tag
-        run: |
-          cd app
-          GIT_HASH=$(git rev-parse --short "$GITHUB_SHA")
-          cd ..
-          echo DOCKER_REPOSITORY=mtweeman/${GITHUB_REPOSITORY////_} >> $GITHUB_ENV
-          echo IMAGE_TAG=$(date -u +"%Y-%m-%dt%H-%M-%Sz")-$GITHUB_REF_NAME-$GIT_HASH >> $GITHUB_ENV
-      - name: Build and publish the Docker image
-        run: |
-          docker buildx create --name multi-arch-builder --driver docker-container --bootstrap
-          docker buildx use multi-arch-builder
-          docker buildx build --platform linux/amd64,linux/arm64 ./app --file ./app/Dockerfile --tag ${{ env.DOCKER_REPOSITORY }}:${{ env.IMAGE_TAG }} --push
-      - name: Checkout config repository
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}-config
-          path: config
-      - name: Update K8s manifest
-        run: |
-          sed -i 's/tag: [[:print:]]*/tag: ${{ env.IMAGE_TAG }}/' ./config/helm/values.yaml
-          cat ./config/helm/values.yaml
-      - name: Push K8s manifest
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.PUSH_TOKEN }}
-        with:
-          source_file: ./config/helm/values.yaml
-          destination_repo: ${{ github.repository }}-config
-          destination_folder: helm
-          user_email: mtweeman@gmail.com
-          user_name: mtweeman
-          destination_branch: master
-          commit_message: Updated image tag
+  chart-update:
+    needs:
+      - image-build
+    name: Chart update
+    uses: hajle-silesia/.github/.github/workflows/shared-chart-update.yaml@v2.4.1
+    with:
+      docker-hub-image-repository-name: ${{ needs.build.outputs.docker-hub-repository-name }}
+      image-tag: ${{ needs.build.outputs.tag }}
+    secrets:
+      github-token: ${{ secrets.PUSH_TOKEN }}
