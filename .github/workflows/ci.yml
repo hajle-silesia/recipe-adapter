@@ -58,7 +58,7 @@ jobs:
     name: Chart update
     uses: hajle-silesia/.github/.github/workflows/shared-chart-update.yaml@v2.4.1
     with:
-      docker-hub-image-repository-name: ${{ needs.build.outputs.docker-hub-repository-name }}
-      image-tag: ${{ needs.build.outputs.tag }}
+      docker-hub-image-repository-name: ${{ needs.image-build.outputs.docker-hub-repository-name }}
+      image-tag: ${{ needs.image-build.outputs.tag }}
     secrets:
       github-token: ${{ secrets.PUSH_TOKEN }}
